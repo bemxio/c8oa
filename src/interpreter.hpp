@@ -2,6 +2,8 @@
 #define INTERPRETER_HPP
 
 #include <SDL2/SDL.h>
+
+#include <iostream>
 #include <cstdint>
 
 class Interpreter {
