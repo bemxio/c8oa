@@ -41,6 +41,10 @@ class Interpreter {
 
         void flow_return();
         void flow_jump(bool call = false);
+
+        void cond_const_equals();
+        void cond_const_not_equal();
+        void cond_register_equals();
 };
 
 #endif

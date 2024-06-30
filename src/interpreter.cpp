@@ -53,6 +53,15 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
             case 0x20:
                 flow_jump(true); break;
 
+            case 0x30:
+                cond_const_equals(); break;
+            
+            case 0x40:
+                cond_const_not_equal(); break;
+            
+            case 0x50:
+                cond_register_equals(); break;
+
             default:
                 break;
         }
@@ -77,4 +86,22 @@ void Interpreter::flow_jump(bool call) {
     }
 
     pc = opcode_address();
+}
+
+void Interpreter::cond_const_equals() {
+    if (v[memory[pc] & 0x0F] == memory[pc + 1]) {
+        pc += 2;
+    }
+}
+
+void Interpreter::cond_const_not_equal() {
+    if (v[memory[pc] & 0x0F] != memory[pc + 1]) {
+        pc += 2;
+    }
+}
+
+void Interpreter::cond_register_equals() {
+    if (v[memory[pc] & 0x0F] == v[memory[pc + 1] >> 4]) {
+        pc += 2;
+    }
 }
