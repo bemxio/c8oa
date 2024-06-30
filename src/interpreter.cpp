@@ -164,3 +164,27 @@ void Interpreter::math_sub_vx() {
 void Interpreter::math_sub_vy() {
     v[memory[pc] & 0x0F] = v[memory[pc + 1] >> 4] - v[memory[pc] & 0x0F];
 }
+
+void Interpreter::mem_set() {
+    I = opcode_address();
+}
+
+void Interpreter::mem_add() {
+    I += v[memory[pc] & 0x0F];
+}
+
+void Interpreter::mem_font_get() {
+    I = memory[v[memory[pc] & 0x0F] * 20];
+}
+
+void Interpreter::mem_reg_dump() {
+    for (uint8_t i = 0; i <= 16; i++) {
+        memory[I + i] = v[i];
+    }
+}
+
+void Interpreter::mem_reg_load() {
+    for (uint8_t i = 0; i <= 16; i++) {
+        v[i] = memory[I + i];
+    }
+}

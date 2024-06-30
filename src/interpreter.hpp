@@ -71,7 +71,8 @@ class Interpreter {
         void math_sub_vy();
 
         void mem_set();
-        void mem_sprite();
+        void mem_add();
+        void mem_font_get();
         void mem_reg_dump();
         void mem_reg_load();
 
