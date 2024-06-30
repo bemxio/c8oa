@@ -87,12 +87,12 @@ void Interpreter::bitop_xor() {
 }
 
 void Interpreter::bitop_shift_left() {
-    v[0x0f] = v[memory[pc] & 0x0F] >> 7;
+    v[0xf] = v[memory[pc] & 0x0F] >> 7;
     v[memory[pc] & 0x0F] <<= 1;
 }
 
 void Interpreter::bitop_shift_right() {
-    v[0x0f] = v[memory[pc] & 0x0F] & 0x01;
+    v[0xf] = v[memory[pc] & 0x0F] & 0x01;
     v[memory[pc] & 0x0F] >>= 1;
 }
 
@@ -143,4 +143,24 @@ void Interpreter::flow_jump() {
 
 void Interpreter::flow_call() {
     s.push_back(pc + 2); pc = opcode_address();
+}
+
+void Interpreter::flow_jump_offset() {
+    pc = opcode_address() + v[0x0];
+}
+
+void Interpreter::math_set() {
+    v[memory[pc] & 0x0F] = v[memory[pc + 1] >> 4];
+}
+
+void Interpreter::math_add() {
+    v[memory[pc] & 0x0F] += v[memory[pc + 1] >> 4];
+}
+
+void Interpreter::math_sub_vx() {
+    v[memory[pc] & 0x0F] -= v[memory[pc + 1] >> 4];
+}
+
+void Interpreter::math_sub_vy() {
+    v[memory[pc] & 0x0F] = v[memory[pc + 1] >> 4] - v[memory[pc] & 0x0F];
 }
