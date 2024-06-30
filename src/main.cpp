@@ -2,10 +2,9 @@
 
 int main() {
     Interpreter interpreter;
+    uint8_t code[] = {0xFF, 0xFF, 0x00};
 
-    interpreter.run(
-        // code will be put here
-    );
+    interpreter.run(code, sizeof code);
 
     return 0;
 }

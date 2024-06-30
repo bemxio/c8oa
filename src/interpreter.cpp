@@ -16,19 +16,65 @@ Interpreter::~Interpreter() {
     SDL_Quit();
 }
 
-void Interpreter::run() {
-    bool loop = true;
+void Interpreter::run(uint8_t* code, uint16_t length) {
+    if (length > 4096) {
+        return; // TODO: throw an exception
+    }
 
-    while (loop) {
+    std::copy(code, code + length, memory);
+
+    while (memory[pc] != 0x00) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 return;
             }
         }
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
+        std::cout << "Opcode: 0x" << std::hex << (int)memory[pc] << (int)memory[pc + 1] << std::endl;
+        std::cout << "PC: 0x" << std::hex << (int)pc << std::endl;
+        std::cout << "I: 0x" << std::hex << (int)I << std::endl;
+
+        switch (memory[pc] & 0xF0) {
+            case 0x00:
+                switch (memory[pc + 1]) {
+                    case 0xE0:
+                        display_clear(); break;
+                    case 0xEE:
+                        flow_return(); break;
+                    default:
+                        break;
+                }
+
+                break;
+            
+            case 0x10:
+                flow_jump(); break;
+
+            case 0x20:
+                flow_jump(true); break;
+
+            default:
+                break;
+        }
 
         SDL_RenderPresent(renderer);
+        pc += 2;
     }
+}
+
+void Interpreter::display_clear() {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+}
+
+void Interpreter::flow_return() {
+    pc = s.back(); s.pop_back();
+}
+
+void Interpreter::flow_jump(bool call) {
+    if (call) {
+        s.push_back(pc + 2);
+    }
+
+    pc = opcode_address();
 }
