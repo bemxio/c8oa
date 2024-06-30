@@ -46,25 +46,89 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
                 }
 
                 break;
-            
             case 0x10:
                 flow_jump(); break;
-
             case 0x20:
                 flow_call(); break;
-
             case 0x30:
                 cond_const_equals(); break;
-            
             case 0x40:
                 cond_const_not_equal(); break;
-            
             case 0x50:
                 cond_register_equals(); break;
+            case 0x60:
+                const_set(); break;
+            case 0x70:
+                const_add(); break;
+            case 0x80:
+                switch (ram[pc + 1] & 0x0F) {
+                    case 0x00:
+                        math_set(); break;
+                    case 0x01:
+                        bitop_or(); break;
+                    case 0x02:
+                        bitop_and(); break;
+                    case 0x03:
+                        bitop_xor(); break;
+                    case 0x04:
+                        math_add(); break;
+                    case 0x05:
+                        math_sub_vx(); break;
+                    case 0x06:
+                        bitop_shift_right(); break;
+                    case 0x07:
+                        math_sub_vy(); break;
+                    case 0x0E:
+                        bitop_shift_left(); break;
+                    default:
+                        break;
+                }
 
+                break;
             case 0x90:
                 cond_register_not_equal(); break;
+            case 0xA0:
+                mem_set(); break;
+            case 0xB0:
+                flow_jump_offset(); break;
+            case 0xC0:
+                rand_and(); break;
+            case 0xD0:
+                display_draw(); break;
+            case 0xE0:
+                switch (ram[pc + 1]) {
+                    case 0x9E:
+                        keyop_pressed(); break;
+                    case 0xA1:
+                        keyop_not_pressed(); break;
+                    default:
+                        break;
+                }
 
+                break;
+            case 0xF0:
+                switch (ram[pc + 1]) {
+                    case 0x07:
+                        timer_get(); break;
+                    case 0x0A:
+                        keyop_get(); break;
+                    case 0x15:
+                        timer_set(); break;
+                    case 0x18:
+                        sound_set(); break;
+                    case 0x1E:
+                        mem_add(); break;
+                    case 0x29:
+                        mem_font_get(); break;
+                    case 0x33:
+                        bcd(); break;
+                    case 0x55:
+                        mem_reg_dump(); break;
+                    case 0x65:
+                        mem_reg_load(); break;
+                    default:
+                        break;
+                }
             default:
                 break;
         }
@@ -156,6 +220,7 @@ void Interpreter::display_draw() {
         vram[x + (y * column)] ^= ram[I + column];
     }
 }
+
 void Interpreter::flow_return() {
     pc = s.back(); s.pop_back();
 }
