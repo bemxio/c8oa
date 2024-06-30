@@ -8,6 +8,7 @@
 #include <vector>
 
 #include <cstdint>
+//#include <cstdlib>
 
 class Interpreter {
     public:
@@ -76,12 +77,12 @@ class Interpreter {
         void mem_reg_dump();
         void mem_reg_load();
 
-        void rand();
+        void rand_and();
 
         void sound_set();
 
-        void timer_set();
         void timer_get();
+        void timer_set();
 };
 
 #endif

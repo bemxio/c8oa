@@ -188,3 +188,19 @@ void Interpreter::mem_reg_load() {
         v[i] = memory[I + i];
     }
 }
+
+void Interpreter::rand_and() {
+    v[memory[pc] & 0x0F] = (rand() % 256) & memory[pc + 1];
+}
+
+void Interpreter::sound_set() {
+    st = v[memory[pc] & 0x0F];
+}
+
+void Interpreter::timer_get() {
+    v[memory[pc] & 0x0F] = dt;
+}
+
+void Interpreter::timer_set() {
+    dt = v[memory[pc] & 0x0F];
+}
