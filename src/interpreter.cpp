@@ -1,12 +1,30 @@
 #include "interpreter.hpp"
 
 Interpreter::Interpreter() {
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-        std::cerr << "Error! " << SDL_GetError() << std::endl;
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+        SDL_Log("SDL could not initialize! Error: %s\n", SDL_GetError());
     }
 
-    window = SDL_CreateWindow("CHIP-8", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 320, SDL_WINDOW_SHOWN);
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    window = SDL_CreateWindow(
+        "CHIP-8",
+        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        SCREEN_WIDTH, SCREEN_HEIGHT,
+        SDL_WINDOW_SHOWN
+    );
+
+    if (window == nullptr) {
+        SDL_Log("Window could not be initialized! Error: %s\n", SDL_GetError());
+    }
+
+    renderer = SDL_CreateRenderer(
+        window,
+        -1,
+        SDL_RENDERER_ACCELERATED
+    );
+
+    if (renderer == nullptr) {
+        SDL_Log("Renderer could not be initialized! Error: %s\n", SDL_GetError());
+    }
 }
 
 Interpreter::~Interpreter() {
@@ -235,6 +253,18 @@ void Interpreter::flow_call() {
 
 void Interpreter::flow_jump_offset() {
     pc = opcode_address() + v[0x0];
+}
+
+void Interpreter::keyop_pressed() {
+    return;
+}
+
+void Interpreter::keyop_not_pressed() {
+    return;
+}
+
+void Interpreter::keyop_get() {
+    return;
 }
 
 void Interpreter::math_set() {

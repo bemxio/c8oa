@@ -8,7 +8,9 @@
 #include <vector>
 
 #include <cstdint>
-//#include <cstdlib>
+
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 320
 
 class Interpreter {
     public:
