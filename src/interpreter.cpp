@@ -74,6 +74,28 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
     }
 }
 
+void Interpreter::bitop_or() {
+    v[memory[pc] & 0x0F] |= v[memory[pc + 1] >> 4];
+}
+
+void Interpreter::bitop_and() {
+    v[memory[pc] & 0x0F] &= v[memory[pc + 1] >> 4];
+}
+
+void Interpreter::bitop_xor() {
+    v[memory[pc] & 0x0F] ^= v[memory[pc + 1] >> 4];
+}
+
+void Interpreter::bitop_shift_left() {
+    v[0x0f] = v[memory[pc] & 0x0F] >> 7;
+    v[memory[pc] & 0x0F] <<= 1;
+}
+
+void Interpreter::bitop_shift_right() {
+    v[0x0f] = v[memory[pc] & 0x0F] & 0x01;
+    v[memory[pc] & 0x0F] >>= 1;
+}
+
 void Interpreter::cond_const_equals() {
     if (v[memory[pc] & 0x0F] == memory[pc + 1]) {
         pc += 2;
@@ -96,6 +118,14 @@ void Interpreter::cond_register_not_equal() {
     if (v[memory[pc] & 0x0F] != v[memory[pc + 1] >> 4]) {
         pc += 2;
     }
+}
+
+void Interpreter::const_set() {
+    v[memory[pc] & 0x0F] = memory[pc + 1];
+}
+
+void Interpreter::const_add() {
+    v[memory[pc] & 0x0F] += memory[pc + 1];
 }
 
 void Interpreter::display_clear() {
