@@ -37,15 +37,50 @@ class Interpreter {
             return (memory[pc] & 0x0F) << 8 | memory[pc + 1];
         }
 
-        void display_clear();
+        void bcd();
 
-        void flow_return();
-        void flow_jump(bool call = false);
+        void bitop_or();
+        void bitop_and();
+        void bitop_xor();
+        void bitop_shift_left();
+        void bitop_shift_right();
 
         void cond_const_equals();
         void cond_const_not_equal();
         void cond_register_equals();
         void cond_register_not_equal();
+
+        void const_set();
+        void const_add();
+
+        void display_clear();
+        void display_draw();
+
+        void flow_return();
+        void flow_jump();
+        void flow_call();
+        void flow_jump_offset();
+
+        void keyop_pressed();
+        void keyop_not_pressed();
+        void keyop_get();
+
+        void math_set();
+        void math_add();
+        void math_sub_vx();
+        void math_sub_vy();
+
+        void mem_set();
+        void mem_sprite();
+        void mem_reg_dump();
+        void mem_reg_load();
+
+        void rand();
+
+        void sound_set();
+
+        void timer_set();
+        void timer_get();
 };
 
 #endif

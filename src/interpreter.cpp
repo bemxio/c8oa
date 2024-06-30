@@ -51,7 +51,7 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
                 flow_jump(); break;
 
             case 0x20:
-                flow_jump(true); break;
+                flow_call(); break;
 
             case 0x30:
                 cond_const_equals(); break;
@@ -72,23 +72,6 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
         SDL_RenderPresent(renderer);
         pc += 2;
     }
-}
-
-void Interpreter::display_clear() {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-}
-
-void Interpreter::flow_return() {
-    pc = s.back(); s.pop_back();
-}
-
-void Interpreter::flow_jump(bool call) {
-    if (call) {
-        s.push_back(pc + 2);
-    }
-
-    pc = opcode_address();
 }
 
 void Interpreter::cond_const_equals() {
@@ -113,4 +96,21 @@ void Interpreter::cond_register_not_equal() {
     if (v[memory[pc] & 0x0F] != v[memory[pc + 1] >> 4]) {
         pc += 2;
     }
+}
+
+void Interpreter::display_clear() {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+}
+
+void Interpreter::flow_return() {
+    pc = s.back(); s.pop_back();
+}
+
+void Interpreter::flow_jump() {
+    pc = opcode_address();
+}
+
+void Interpreter::flow_call() {
+    s.push_back(pc + 2); pc = opcode_address();
 }
