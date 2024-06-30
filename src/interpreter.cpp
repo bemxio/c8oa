@@ -21,22 +21,22 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
         return; // TODO: throw an exception
     }
 
-    std::copy(code, code + length, memory);
+    std::copy(code, code + length, ram);
 
-    while (memory[pc] != 0x00) {
+    while (ram[pc] != 0x00) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 return;
             }
         }
 
-        std::cout << "Opcode: 0x" << std::hex << (int)memory[pc] << (int)memory[pc + 1] << std::endl;
+        std::cout << "Opcode: 0x" << std::hex << (int)ram[pc] << (int)ram[pc + 1] << std::endl;
         std::cout << "PC: 0x" << std::hex << (int)pc << std::endl;
         std::cout << "I: 0x" << std::hex << (int)I << std::endl;
 
-        switch (memory[pc] & 0xF0) {
+        switch (ram[pc] & 0xF0) {
             case 0x00:
-                switch (memory[pc + 1]) {
+                switch (ram[pc + 1]) {
                     case 0xE0:
                         display_clear(); break;
                     case 0xEE:
@@ -74,65 +74,88 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
     }
 }
 
+void Interpreter::bcd() {
+    ram[I] = v[ram[pc] & 0x0F] / 100;
+    ram[I + 1] = (v[ram[pc] & 0x0F] / 10) % 10;
+    ram[I + 2] = v[ram[pc] & 0x0F] % 10;
+}
+
 void Interpreter::bitop_or() {
-    v[memory[pc] & 0x0F] |= v[memory[pc + 1] >> 4];
+    v[ram[pc] & 0x0F] |= v[ram[pc + 1] >> 4];
 }
 
 void Interpreter::bitop_and() {
-    v[memory[pc] & 0x0F] &= v[memory[pc + 1] >> 4];
+    v[ram[pc] & 0x0F] &= v[ram[pc + 1] >> 4];
 }
 
 void Interpreter::bitop_xor() {
-    v[memory[pc] & 0x0F] ^= v[memory[pc + 1] >> 4];
+    v[ram[pc] & 0x0F] ^= v[ram[pc + 1] >> 4];
 }
 
 void Interpreter::bitop_shift_left() {
-    v[0xf] = v[memory[pc] & 0x0F] >> 7;
-    v[memory[pc] & 0x0F] <<= 1;
+    v[0xf] = v[ram[pc] & 0x0F] >> 7;
+    v[ram[pc] & 0x0F] <<= 1;
 }
 
 void Interpreter::bitop_shift_right() {
-    v[0xf] = v[memory[pc] & 0x0F] & 0x01;
-    v[memory[pc] & 0x0F] >>= 1;
+    v[0xf] = v[ram[pc] & 0x0F] & 0x01;
+    v[ram[pc] & 0x0F] >>= 1;
 }
 
 void Interpreter::cond_const_equals() {
-    if (v[memory[pc] & 0x0F] == memory[pc + 1]) {
+    if (v[ram[pc] & 0x0F] == ram[pc + 1]) {
         pc += 2;
     }
 }
 
 void Interpreter::cond_const_not_equal() {
-    if (v[memory[pc] & 0x0F] != memory[pc + 1]) {
+    if (v[ram[pc] & 0x0F] != ram[pc + 1]) {
         pc += 2;
     }
 }
 
 void Interpreter::cond_register_equals() {
-    if (v[memory[pc] & 0x0F] == v[memory[pc + 1] >> 4]) {
+    if (v[ram[pc] & 0x0F] == v[ram[pc + 1] >> 4]) {
         pc += 2;
     }
 }
 
 void Interpreter::cond_register_not_equal() {
-    if (v[memory[pc] & 0x0F] != v[memory[pc + 1] >> 4]) {
+    if (v[ram[pc] & 0x0F] != v[ram[pc + 1] >> 4]) {
         pc += 2;
     }
 }
 
 void Interpreter::const_set() {
-    v[memory[pc] & 0x0F] = memory[pc + 1];
+    v[ram[pc] & 0x0F] = ram[pc + 1];
 }
 
 void Interpreter::const_add() {
-    v[memory[pc] & 0x0F] += memory[pc + 1];
+    v[ram[pc] & 0x0F] += ram[pc + 1];
 }
 
 void Interpreter::display_clear() {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
+    for (uint8_t i = 0; i < 256; i++) {
+        vram[i] = 0x00;
+    }
 }
 
+void Interpreter::display_draw() {
+    uint8_t x = v[ram[pc] & 0x0F];
+    uint8_t y = v[ram[pc + 1] >> 4];
+
+    uint8_t height = ram[pc + 1] & 0x0F;
+
+    for (uint8_t column = 0; column < height; column++) {
+        if (vram[x + (y * column)] & ram[I + column]) {
+            v[0xf] = 1;
+        } else {
+            v[0xf] = 0;
+        }
+
+        vram[x + (y * column)] ^= ram[I + column];
+    }
+}
 void Interpreter::flow_return() {
     pc = s.back(); s.pop_back();
 }
@@ -150,19 +173,19 @@ void Interpreter::flow_jump_offset() {
 }
 
 void Interpreter::math_set() {
-    v[memory[pc] & 0x0F] = v[memory[pc + 1] >> 4];
+    v[ram[pc] & 0x0F] = v[ram[pc + 1] >> 4];
 }
 
 void Interpreter::math_add() {
-    v[memory[pc] & 0x0F] += v[memory[pc + 1] >> 4];
+    v[ram[pc] & 0x0F] += v[ram[pc + 1] >> 4];
 }
 
 void Interpreter::math_sub_vx() {
-    v[memory[pc] & 0x0F] -= v[memory[pc + 1] >> 4];
+    v[ram[pc] & 0x0F] -= v[ram[pc + 1] >> 4];
 }
 
 void Interpreter::math_sub_vy() {
-    v[memory[pc] & 0x0F] = v[memory[pc + 1] >> 4] - v[memory[pc] & 0x0F];
+    v[ram[pc] & 0x0F] = v[ram[pc + 1] >> 4] - v[ram[pc] & 0x0F];
 }
 
 void Interpreter::mem_set() {
@@ -170,37 +193,37 @@ void Interpreter::mem_set() {
 }
 
 void Interpreter::mem_add() {
-    I += v[memory[pc] & 0x0F];
+    I += v[ram[pc] & 0x0F];
 }
 
 void Interpreter::mem_font_get() {
-    I = memory[v[memory[pc] & 0x0F] * 20];
+    I = ram[v[ram[pc] & 0x0F] * 5];
 }
 
 void Interpreter::mem_reg_dump() {
     for (uint8_t i = 0; i <= 16; i++) {
-        memory[I + i] = v[i];
+        ram[I + i] = v[i];
     }
 }
 
 void Interpreter::mem_reg_load() {
     for (uint8_t i = 0; i <= 16; i++) {
-        v[i] = memory[I + i];
+        v[i] = ram[I + i];
     }
 }
 
 void Interpreter::rand_and() {
-    v[memory[pc] & 0x0F] = (rand() % 256) & memory[pc + 1];
+    v[ram[pc] & 0x0F] = (rand() % 256) & ram[pc + 1];
 }
 
 void Interpreter::sound_set() {
-    st = v[memory[pc] & 0x0F];
+    st = v[ram[pc] & 0x0F];
 }
 
 void Interpreter::timer_get() {
-    v[memory[pc] & 0x0F] = dt;
+    v[ram[pc] & 0x0F] = dt;
 }
 
 void Interpreter::timer_set() {
-    dt = v[memory[pc] & 0x0F];
+    dt = v[ram[pc] & 0x0F];
 }

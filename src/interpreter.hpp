@@ -22,7 +22,8 @@ class Interpreter {
         SDL_Renderer* renderer;
         SDL_Event event;
 
-        uint8_t memory[4096] = {0x00};
+        uint8_t ram[4096] = {0x00};
+        uint8_t vram[256] = {0x00};
 
         uint8_t v[16] = {0x00}; // registers V0 - VF
         uint16_t I = 0x0000; // I register
@@ -35,7 +36,7 @@ class Interpreter {
         uint16_t pc = 0x0000; // program counter (originally 0x0200, set to 0x0000 for testing)
 
         uint16_t opcode_address() {
-            return (memory[pc] & 0x0F) << 8 | memory[pc + 1];
+            return (ram[pc] & 0x0F) << 8 | ram[pc + 1];
         }
 
         void bcd();
