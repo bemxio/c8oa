@@ -45,6 +45,7 @@ class Interpreter {
         void cond_const_equals();
         void cond_const_not_equal();
         void cond_register_equals();
+        void cond_register_not_equal();
 };
 
 #endif

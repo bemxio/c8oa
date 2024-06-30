@@ -62,6 +62,9 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
             case 0x50:
                 cond_register_equals(); break;
 
+            case 0x90:
+                cond_register_not_equal(); break;
+
             default:
                 break;
         }
@@ -102,6 +105,12 @@ void Interpreter::cond_const_not_equal() {
 
 void Interpreter::cond_register_equals() {
     if (v[memory[pc] & 0x0F] == v[memory[pc + 1] >> 4]) {
+        pc += 2;
+    }
+}
+
+void Interpreter::cond_register_not_equal() {
+    if (v[memory[pc] & 0x0F] != v[memory[pc + 1] >> 4]) {
         pc += 2;
     }
 }
