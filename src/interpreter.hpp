@@ -35,7 +35,7 @@ class Interpreter {
         uint8_t dt = 0x00; // delay timer
         uint8_t st = 0x00; // sound timer
 
-        uint16_t pc = 0x0000; // program counter (originally 0x0200, set to 0x0000 for testing)
+        uint16_t pc = 0x200; // program counter
 
         uint16_t opcode_address() {
             return (ram[pc] & 0x0F) << 8 | ram[pc + 1];

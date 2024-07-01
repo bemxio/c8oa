@@ -35,7 +35,7 @@ Interpreter::~Interpreter() {
 }
 
 void Interpreter::run(uint8_t* code, uint16_t length) {
-    if (length > 4096) {
+    if (length > 4096 - 512) {
         return; // TODO: throw an exception
     }
 
@@ -48,8 +48,8 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
             }
         }
 
-        std::cout << "Opcode: 0x" << std::hex << (int)ram[pc] << (int)ram[pc + 1] << std::endl;
-        std::cout << "PC: 0x" << std::hex << (int)pc << std::endl;
+        std::cout << "RAM: 0x" << std::hex << (int)ram[pc] << (int)ram[pc + 1] << ", ";
+        std::cout << "PC: 0x" << std::hex << (int)pc << ", ";
         std::cout << "I: 0x" << std::hex << (int)I << std::endl;
 
         switch (ram[pc] & 0xF0) {
@@ -152,6 +152,11 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
         }
 
         SDL_RenderPresent(renderer);
+        SDL_Delay(1000 / 60);
+
+        if (dt > 0) dt--;
+        if (st > 0) st--;
+
         pc += 2;
     }
 }
@@ -175,12 +180,12 @@ void Interpreter::bitop_xor() {
 }
 
 void Interpreter::bitop_shift_left() {
-    v[0xf] = v[ram[pc] & 0x0F] >> 7;
+    v[0xF] = v[ram[pc] & 0x0F] >> 7;
     v[ram[pc] & 0x0F] <<= 1;
 }
 
 void Interpreter::bitop_shift_right() {
-    v[0xf] = v[ram[pc] & 0x0F] & 0x01;
+    v[0xF] = v[ram[pc] & 0x0F] & 0x01;
     v[ram[pc] & 0x0F] >>= 1;
 }
 
@@ -230,11 +235,11 @@ void Interpreter::display_draw() {
 
     for (uint8_t row = 0; row < height; row++) {
         for (uint8_t column = 0; column < 8; column++) {
-            if (ram[I + row] & (0x80 >> column) && vram[((x + column) + ((y + row) * 64))]) {
-                v[0xf] = 1;
+            if (ram[I + row] & (0x80 >> column) && vram[(x + column) + ((y + row) * 64)]) {
+                v[0xF] = 1;
             }
 
-            vram[((x + column) + ((y + row) * 64))] ^= true;
+            vram[(x + column) + ((y + row) * 64)] ^= true;
         }
     }
 }
