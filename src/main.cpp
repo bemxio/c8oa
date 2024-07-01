@@ -1,21 +1,21 @@
 #include "interpreter.hpp"
 
-#include <iostream>
-#include <fstream>
-
 #include <cstdint>
 #include <cstddef>
+#include <cstdio>
+
+#include <fstream>
 
 int main(int argc, char** argv) {
     if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " <path to ROM>" << std::endl; return 1;
+        fprintf(stderr, "Usage: %s <path to ROM>\n", argv[0]); return 1;
     }
 
     std::ifstream file(argv[1], std::ifstream::out | std::ifstream::binary);
     size_t size;
 
     if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << argv[1] << std::endl; return 1;
+        fprintf(stderr, "Failed to open file: %s\n", argv[1]); return 1;
     }
 
     file.seekg(0, file.end);
@@ -23,10 +23,12 @@ int main(int argc, char** argv) {
     file.seekg(0, file.beg);
 
     Interpreter interpreter;
-    uint8_t code[size];
+    char code[size];
 
-    file.read(reinterpret_cast<char*>(code), size);
-    interpreter.run(code, size);
+    file.read(code, size);
+    file.close();
+
+    interpreter.run(reinterpret_cast<uint8_t*>(code), size);
 
     return 0;
 }

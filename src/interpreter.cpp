@@ -41,33 +41,28 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
         return; // TODO: throw an exception
     }
 
-    std::copy(code, code + length, ram + 0x200);
+    std::copy(code, code + length, ram + 0x0200);
 
-    while (ram[pc] != 0x00) {
+    while (true) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 return;
             }
         }
 
-        std::cout << std::hex << std::uppercase;
-
-        std::cout << "RAM: 0x" << (int)ram[pc] << (int)ram[pc + 1] << ", ";
-        std::cout << "PC: 0x" << (int)pc << ", ";
-        std::cout << "I: 0x" << std::hex << (int)I << std::endl;
+        printf("RAM: 0x%02X%02X, PC: 0x%02X, I: 0x%02X\n", ram[pc], ram[pc + 1], pc, I);
 
         for (uint8_t i = 0; i < 16; i++) {
-            std::cout << "V" << (int)i << ": 0x" << (int)v[i];
+            printf("V%X: 0x%02X", i, v[i]);
 
             if (i < 15) {
-                std::cout << ", ";
+                printf(", ");
             } else {
-                std::cout << std::endl;
+                printf("\n");
             }
         }
 
-        std::cout << "DT: 0x" << (int)dt << ", ";
-        std::cout << "ST: 0x" << (int)st << std::endl;
+        printf("DT: 0x%02X, ST: 0x%02X\n", dt, st);
 
         switch (ram[pc] & 0xF0) {
             case 0x00:
@@ -186,6 +181,8 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
         SDL_RenderPresent(renderer);
         SDL_Delay(1000 / 60);
 
+        //getchar();
+
         if (dt > 0) dt--;
         if (st > 0) st--;
 
@@ -254,7 +251,7 @@ void Interpreter::const_add() {
 }
 
 void Interpreter::display_clear() {
-    for (uint8_t i = 0; i < 2048; i++) {
+    for (uint16_t i = 0; i < 2048; i++) {
         vram[i] = false;
     }
 }
@@ -271,7 +268,7 @@ void Interpreter::display_draw() {
                 v[0xF] = 1;
             }
 
-            vram[(x + column) + ((y + row) * 64)] ^= true;
+            vram[(x + column) + ((y + row) * 64)] ^= ram[I + row] & (0x80 >> column);
         }
     }
 }

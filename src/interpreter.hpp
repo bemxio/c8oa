@@ -3,11 +3,11 @@
 
 #include <SDL2/SDL.h>
 
-#include <iostream>
 #include <algorithm>
 #include <vector>
 
 #include <cstdint>
+#include <cstdio>
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 320
@@ -47,7 +47,7 @@ class Interpreter {
         uint8_t dt = 0x00; // delay timer
         uint8_t st = 0x00; // sound timer
 
-        uint16_t pc = 0x200; // program counter
+        uint16_t pc = 0x0200; // program counter
 
         void bcd();
 
