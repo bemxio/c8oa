@@ -1,5 +1,8 @@
 #include "interpreter.hpp"
 
+#define CHIP8_DEBUG_INFO
+//#define CHIP8_DEBUG_WAIT_FOR_KEY
+
 Interpreter::Interpreter() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
         SDL_Log("SDL could not be initialized! Error: %s\n", SDL_GetError());
@@ -50,19 +53,21 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
             }
         }
 
-        printf("Opcode: 0x%02X%02X, PC: 0x%02X, I: 0x%02X\n\n", ram[pc], ram[pc + 1], pc, I);
+        #ifdef CHIP8_DEBUG_INFO
+            printf("Opcode: 0x%02X%02X, PC: 0x%02X, I: 0x%02X\n\n", ram[pc], ram[pc + 1], pc, I);
 
-        for (uint8_t i = 0; i < 16; i++) {
-            printf("V%X: 0x%02X", i, v[i]);
+            for (uint8_t i = 0; i < 16; i++) {
+                printf("V%X: 0x%02X", i, v[i]);
 
-            if ((i + 1) % 4 != 0) {
-                printf(", ");
-            } else {
-                printf("\n");
+                if ((i + 1) % 4 != 0) {
+                    printf(", ");
+                } else {
+                    printf("\n");
+                }
             }
-        }
 
-        printf("\nDT: 0x%02X, ST: 0x%02X\n--------------------------------------\n", dt, st);
+            printf("\nDT: 0x%02X, ST: 0x%02X\n--------------------------------------\n", dt, st);
+        #endif
 
         switch (ram[pc] & 0xF0) {
             case 0x00:
@@ -179,9 +184,11 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
         }
 
         SDL_RenderPresent(renderer);
-
         SDL_Delay(1000 / 60);
-        //getchar();
+
+        #ifdef CHIP8_DEBUG_WAIT_FOR_KEY
+            getchar();
+        #endif
 
         if (dt > 0) dt--;
         if (st > 0) st--;
