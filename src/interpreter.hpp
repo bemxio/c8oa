@@ -25,7 +25,7 @@ class Interpreter {
         SDL_Event event;
 
         uint8_t ram[4096] = {0x00};
-        uint8_t vram[256] = {0x00};
+        bool vram[2048] = {false};
 
         uint8_t v[16] = {0x00}; // registers V0 - VF
         uint16_t I = 0x0000; // I register

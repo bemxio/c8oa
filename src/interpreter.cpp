@@ -2,7 +2,7 @@
 
 Interpreter::Interpreter() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
-        SDL_Log("SDL could not initialize! Error: %s\n", SDL_GetError());
+        SDL_Log("SDL could not be initialized! Error: %s\n", SDL_GetError());
     }
 
     window = SDL_CreateWindow(
@@ -217,8 +217,8 @@ void Interpreter::const_add() {
 }
 
 void Interpreter::display_clear() {
-    for (uint8_t i = 0; i < 256; i++) {
-        vram[i] = 0x00;
+    for (uint8_t i = 0; i < 2048; i++) {
+        vram[i] = false;
     }
 }
 
@@ -228,14 +228,14 @@ void Interpreter::display_draw() {
 
     uint8_t height = ram[pc + 1] & 0x0F;
 
-    for (uint8_t column = 0; column < height; column++) {
-        if (vram[x + (y * column)] & ram[I + column]) {
-            v[0xf] = 1;
-        } else {
-            v[0xf] = 0;
-        }
+    for (uint8_t row = 0; row < height; row++) {
+        for (uint8_t column = 0; column < 8; column++) {
+            if (ram[I + row] & (0x80 >> column) && vram[((x + column) + ((y + row) * 64))]) {
+                v[0xf] = 1;
+            }
 
-        vram[x + (y * column)] ^= ram[I + column];
+            vram[((x + column) + ((y + row) * 64))] ^= true;
+        }
     }
 }
 
