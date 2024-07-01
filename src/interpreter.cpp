@@ -179,8 +179,8 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
         }
 
         SDL_RenderPresent(renderer);
-        SDL_Delay(1000 / 60);
 
+        SDL_Delay(1000 / 60);
         //getchar();
 
         if (dt > 0) dt--;
@@ -278,7 +278,7 @@ void Interpreter::flow_return() {
 }
 
 void Interpreter::flow_jump() {
-    pc = (ram[pc] & 0x0F) << 8 | ram[pc + 1];
+    pc = ((ram[pc] & 0x0F) << 8 | ram[pc + 1]) - 2;
 }
 
 void Interpreter::flow_call() {
