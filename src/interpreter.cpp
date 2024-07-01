@@ -25,6 +25,8 @@ Interpreter::Interpreter() {
     if (renderer == nullptr) {
         SDL_Log("Renderer could not be initialized! Error: %s\n", SDL_GetError());
     }
+
+    keys = SDL_GetKeyboardState(nullptr);
 }
 
 Interpreter::~Interpreter() {
@@ -249,27 +251,37 @@ void Interpreter::flow_return() {
 }
 
 void Interpreter::flow_jump() {
-    pc = opcode_address();
+    pc = (ram[pc] & 0x0F) << 8 | ram[pc + 1];
 }
 
 void Interpreter::flow_call() {
-    s.push_back(pc + 2); pc = opcode_address();
+    s.push_back(pc + 2); pc = (ram[pc] & 0x0F) << 8 | ram[pc + 1];
 }
 
 void Interpreter::flow_jump_offset() {
-    pc = opcode_address() + v[0x0];
+    pc = ((ram[pc] & 0x0F) << 8 | ram[pc + 1]) + v[0x0];
 }
 
 void Interpreter::keyop_pressed() {
-    return;
+    if (keys[keymap[v[ram[pc] & 0x0F]]]) {
+        pc += 2;
+    }
 }
 
 void Interpreter::keyop_not_pressed() {
-    return;
+    if (!keys[keymap[v[ram[pc] & 0x0F]]]) {
+        pc += 2;
+    }
 }
 
 void Interpreter::keyop_get() {
-    return;
+    while (true) {
+        for (uint8_t i = 0; i < 16; i++) {
+            if (keys[keymap[i]]) {
+                v[ram[pc] & 0x0F] = i; return;
+            }
+        }
+    }
 }
 
 void Interpreter::math_set() {
@@ -289,7 +301,7 @@ void Interpreter::math_sub_vy() {
 }
 
 void Interpreter::mem_set() {
-    I = opcode_address();
+    I = (ram[pc] & 0x0F) << 8 | ram[pc + 1];
 }
 
 void Interpreter::mem_add() {

@@ -24,6 +24,18 @@ class Interpreter {
         SDL_Renderer* renderer;
         SDL_Event event;
 
+        const uint8_t* keys;
+        const uint8_t keymap[16] = {
+            SDL_SCANCODE_KP_0, SDL_SCANCODE_KP_1, // 0x0, 0x1
+            SDL_SCANCODE_KP_2, SDL_SCANCODE_KP_3, // 0x2, 0x3
+            SDL_SCANCODE_KP_4, SDL_SCANCODE_KP_5, // 0x4, 0x5
+            SDL_SCANCODE_KP_6, SDL_SCANCODE_KP_7, // 0x6, 0x7
+            SDL_SCANCODE_KP_8, SDL_SCANCODE_KP_9, // 0x8, 0x9
+
+            SDL_SCANCODE_KP_DIVIDE, SDL_SCANCODE_KP_MULTIPLY, SDL_SCANCODE_KP_MINUS, // 0xA, 0xB, 0xC
+            SDL_SCANCODE_KP_PLUS, SDL_SCANCODE_KP_ENTER, SDL_SCANCODE_KP_PERIOD // 0xD, 0xE, 0xF
+        };
+
         uint8_t ram[4096] = {0x00};
         bool vram[2048] = {false};
 
@@ -36,10 +48,6 @@ class Interpreter {
         uint8_t st = 0x00; // sound timer
 
         uint16_t pc = 0x200; // program counter
-
-        uint16_t opcode_address() {
-            return (ram[pc] & 0x0F) << 8 | ram[pc + 1];
-        }
 
         void bcd();
 
