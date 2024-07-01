@@ -50,9 +50,24 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
             }
         }
 
-        std::cout << "RAM: 0x" << std::hex << (int)ram[pc] << (int)ram[pc + 1] << ", ";
-        std::cout << "PC: 0x" << std::hex << (int)pc << ", ";
+        std::cout << std::hex << std::uppercase;
+
+        std::cout << "RAM: 0x" << (int)ram[pc] << (int)ram[pc + 1] << ", ";
+        std::cout << "PC: 0x" << (int)pc << ", ";
         std::cout << "I: 0x" << std::hex << (int)I << std::endl;
+
+        for (uint8_t i = 0; i < 16; i++) {
+            std::cout << "V" << (int)i << ": 0x" << (int)v[i];
+
+            if (i < 15) {
+                std::cout << ", ";
+            } else {
+                std::cout << std::endl;
+            }
+        }
+
+        std::cout << "DT: 0x" << (int)dt << ", ";
+        std::cout << "ST: 0x" << (int)st << std::endl;
 
         switch (ram[pc] & 0xF0) {
             case 0x00:
