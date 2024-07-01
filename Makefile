@@ -1,6 +1,6 @@
 # constants
 CXX = g++
-CXXFLAGS = -Wall
+CXXFLAGS = -Wall -g
 CXXLIBS = -lSDL2
 
 SRC_DIR = src

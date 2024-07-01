@@ -50,6 +50,7 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
             }
         }
 
+        /*
         printf("RAM: 0x%02X%02X, PC: 0x%02X, I: 0x%02X\n", ram[pc], ram[pc + 1], pc, I);
 
         for (uint8_t i = 0; i < 16; i++) {
@@ -63,6 +64,7 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
         }
 
         printf("DT: 0x%02X, ST: 0x%02X\n", dt, st);
+        */
 
         switch (ram[pc] & 0xF0) {
             case 0x00:
@@ -274,7 +276,7 @@ void Interpreter::display_draw() {
 }
 
 void Interpreter::flow_return() {
-    pc = s.back(); s.pop_back();
+    pc = s.back() - 2; s.pop_back();
 }
 
 void Interpreter::flow_jump() {
@@ -282,11 +284,11 @@ void Interpreter::flow_jump() {
 }
 
 void Interpreter::flow_call() {
-    s.push_back(pc + 2); pc = (ram[pc] & 0x0F) << 8 | ram[pc + 1];
+    s.push_back(pc + 2); pc = ((ram[pc] & 0x0F) << 8 | ram[pc + 1]) - 2;
 }
 
 void Interpreter::flow_jump_offset() {
-    pc = ((ram[pc] & 0x0F) << 8 | ram[pc + 1]) + v[0x0];
+    pc = ((ram[pc] & 0x0F) << 8 | ram[pc + 1]) + v[0x0] - 2;
 }
 
 void Interpreter::keyop_pressed() {
@@ -340,13 +342,13 @@ void Interpreter::mem_font_get() {
 }
 
 void Interpreter::mem_reg_dump() {
-    for (uint8_t i = 0; i <= 16; i++) {
+    for (uint8_t i = 0; i < 16; i++) {
         ram[I + i] = v[i];
     }
 }
 
 void Interpreter::mem_reg_load() {
-    for (uint8_t i = 0; i <= 16; i++) {
+    for (uint8_t i = 0; i < 16; i++) {
         v[i] = ram[I + i];
     }
 }
