@@ -41,7 +41,7 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
         return; // TODO: throw an exception
     }
 
-    std::copy(code, code + length, ram);
+    std::copy(code, code + length, ram + 0x200);
 
     while (ram[pc] != 0x00) {
         while (SDL_PollEvent(&event)) {
@@ -164,6 +164,8 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
                     default:
                         break;
                 }
+
+                break;
             default:
                 break;
         }

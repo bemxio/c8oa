@@ -4,5 +4,10 @@
 # Build directory
 build/
 
+# Executables
+*.exe
+*.out
+*.ch8
+
 # Visual Studio Code
 .vscode/
