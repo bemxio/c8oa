@@ -50,21 +50,19 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
             }
         }
 
-        /*
-        printf("RAM: 0x%02X%02X, PC: 0x%02X, I: 0x%02X\n", ram[pc], ram[pc + 1], pc, I);
+        printf("Opcode: 0x%02X%02X, PC: 0x%02X, I: 0x%02X\n\n", ram[pc], ram[pc + 1], pc, I);
 
         for (uint8_t i = 0; i < 16; i++) {
             printf("V%X: 0x%02X", i, v[i]);
 
-            if (i < 15) {
+            if ((i + 1) % 4 != 0) {
                 printf(", ");
             } else {
                 printf("\n");
             }
         }
 
-        printf("DT: 0x%02X, ST: 0x%02X\n", dt, st);
-        */
+        printf("\nDT: 0x%02X, ST: 0x%02X\n--------------------------------------\n", dt, st);
 
         switch (ram[pc] & 0xF0) {
             case 0x00:
