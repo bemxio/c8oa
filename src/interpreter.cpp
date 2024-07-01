@@ -168,6 +168,19 @@ void Interpreter::run(uint8_t* code, uint16_t length) {
                 break;
         }
 
+        for (uint8_t y = 0; y < 32; y++) {
+            for (uint8_t x = 0; x < 64; x++) {
+                if (vram[x + (y * 64)]) {
+                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                } else {
+                    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                }
+
+                SDL_Rect pixel = {x * 10, y * 10, 10, 10};
+                SDL_RenderFillRect(renderer, &pixel);
+            }
+        }
+
         SDL_RenderPresent(renderer);
         SDL_Delay(1000 / 60);
 
