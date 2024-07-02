@@ -7,7 +7,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/chip8",
             "args": [
-                "${workspaceFolder}/roms/3-corax+.ch8"
+                "${workspaceFolder}/roms/4-flags.ch8"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
