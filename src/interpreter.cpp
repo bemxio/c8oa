@@ -216,13 +216,11 @@ void Interpreter::bitop_xor() {
 }
 
 void Interpreter::bitop_shift_left() {
-    v[0xF] = v[ram[pc] & 0x0F] >> 7;
-    v[ram[pc] & 0x0F] <<= 1;
+    v[ram[pc] & 0x0F] = v[ram[pc + 1] >> 4] << 1; // TODO: set flag in v[0xF]
 }
 
 void Interpreter::bitop_shift_right() {
-    v[0xF] = v[ram[pc] & 0x0F] & 0x01;
-    v[ram[pc] & 0x0F] >>= 1;
+    v[ram[pc] & 0x0F] = v[ram[pc + 1] >> 4] >> 1; // TODO: set flag in v[0xF]
 }
 
 void Interpreter::cond_const_equals() {
@@ -264,8 +262,8 @@ void Interpreter::display_clear() {
 }
 
 void Interpreter::display_draw() {
-    uint8_t x = v[ram[pc] & 0x0F];
-    uint8_t y = v[ram[pc + 1] >> 4];
+    uint8_t x = v[ram[pc] & 0x0F] % 64;
+    uint8_t y = v[ram[pc + 1] >> 4] % 32;
 
     uint8_t height = ram[pc + 1] & 0x0F;
 
@@ -343,19 +341,23 @@ void Interpreter::mem_add() {
 }
 
 void Interpreter::mem_font_get() {
-    I = ram[v[ram[pc] & 0x0F] * 5];
+    I = v[ram[pc] & 0x0F] * 5;
 }
 
 void Interpreter::mem_reg_dump() {
-    for (uint8_t i = 0; i < 16; i++) {
-        ram[I + i] = v[i];
+    for (uint8_t i = 0; i < (ram[pc] & 0x0F); i++) {
+        ram[I] = v[i]; I++;
     }
+
+    I++;
 }
 
 void Interpreter::mem_reg_load() {
-    for (uint8_t i = 0; i < 16; i++) {
-        v[i] = ram[I + i];
+    for (uint8_t i = 0; i < (ram[pc] & 0x0F); i++) {
+        v[i] = ram[I]; I++;
     }
+
+    I++;
 }
 
 void Interpreter::rand_and() {
