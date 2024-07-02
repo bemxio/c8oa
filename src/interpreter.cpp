@@ -216,11 +216,17 @@ void Interpreter::bitop_xor() {
 }
 
 void Interpreter::bitop_shift_left() {
-    v[ram[pc] & 0x0F] = v[ram[pc + 1] >> 4] << 1; // TODO: set flag in v[0xF]
+    uint8_t flag = v[ram[pc + 1] >> 4] >> 7;
+
+    v[ram[pc] & 0x0F] = v[ram[pc + 1] >> 4] << 1;
+    v[0xF] = flag;
 }
 
 void Interpreter::bitop_shift_right() {
-    v[ram[pc] & 0x0F] = v[ram[pc + 1] >> 4] >> 1; // TODO: set flag in v[0xF]
+    uint8_t flag = v[ram[pc + 1] >> 4] & 0x01;
+
+    v[ram[pc] & 0x0F] = v[ram[pc + 1] >> 4] >> 1;
+    v[0xF] = flag;
 }
 
 void Interpreter::cond_const_equals() {
@@ -321,15 +327,24 @@ void Interpreter::math_set() {
 }
 
 void Interpreter::math_add() {
+    uint8_t flag = (v[ram[pc] & 0x0F] + v[ram[pc + 1] >> 4]) > 255;
+
     v[ram[pc] & 0x0F] += v[ram[pc + 1] >> 4];
+    v[0xF] = flag;
 }
 
 void Interpreter::math_sub_vx() {
+    uint8_t flag = v[ram[pc] & 0x0F] > v[ram[pc + 1] >> 4];
+
     v[ram[pc] & 0x0F] -= v[ram[pc + 1] >> 4];
+    v[0xF] = flag;
 }
 
 void Interpreter::math_sub_vy() {
+    uint8_t flag = v[ram[pc + 1] >> 4] > v[ram[pc] & 0x0F];
+
     v[ram[pc] & 0x0F] = v[ram[pc + 1] >> 4] - v[ram[pc] & 0x0F];
+    v[0xF] = flag;
 }
 
 void Interpreter::mem_set() {
@@ -345,7 +360,7 @@ void Interpreter::mem_font_get() {
 }
 
 void Interpreter::mem_reg_dump() {
-    for (uint8_t i = 0; i < (ram[pc] & 0x0F); i++) {
+    for (uint8_t i = 0; i <= (ram[pc] & 0x0F); i++) {
         ram[I] = v[i]; I++;
     }
 
@@ -353,7 +368,7 @@ void Interpreter::mem_reg_dump() {
 }
 
 void Interpreter::mem_reg_load() {
-    for (uint8_t i = 0; i < (ram[pc] & 0x0F); i++) {
+    for (uint8_t i = 0; i <= (ram[pc] & 0x0F); i++) {
         v[i] = ram[I]; I++;
     }
 
