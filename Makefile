@@ -9,7 +9,7 @@ BUILD_DIR = build
 SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
 OBJECTS = $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SOURCES))
 
-EXECUTABLE = chip8
+EXECUTABLE = c8oa
 
 # targets
 all: $(BUILD_DIR)/$(EXECUTABLE)

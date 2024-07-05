@@ -5,7 +5,7 @@
             "name": "Debug with GDB",
             "type":"cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/chip8",
+            "program": "${workspaceFolder}/build/c8oa",
             "args": [
                 "${workspaceFolder}/roms/4-flags.ch8"
             ],
