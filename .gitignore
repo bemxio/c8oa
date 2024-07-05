@@ -7,7 +7,7 @@ build/
 # Executables
 *.exe
 *.out
-*.ch8
+#*.ch8
 
 # Visual Studio Code
 #.vscode/
