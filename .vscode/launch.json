@@ -7,7 +7,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/c8oa",
             "args": [
-                "${workspaceFolder}/roms/4-flags.ch8"
+                "${workspaceFolder}/roms/5-quirks.ch8"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
